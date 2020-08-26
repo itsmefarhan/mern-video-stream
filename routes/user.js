@@ -5,6 +5,7 @@ const {
   getUsers,
   getUser,
   updateUser,
+  deleteUser,
 } = require("../controllers/user");
 const { validateRegister, validationErrors } = require("../validators/auth");
 const { requireLogin } = require("../controllers/auth");
@@ -13,6 +14,10 @@ router
   .post(validateRegister, validationErrors, register)
   .get(getUsers);
 
-router.route("/:userId").get(getUser).put(requireLogin, updateUser);
+router
+  .route("/:userId")
+  .get(getUser)
+  .put(requireLogin, updateUser)
+  .delete(requireLogin, deleteUser);
 
 module.exports = router;
