@@ -29,3 +29,18 @@ exports.login = async (req, res) => {
     return res.status(400).json({ error: err.message });
   }
 };
+
+// Authenticate user middleware
+exports.requireLogin = (req, res, next) => {  
+  if (req.headers.authorization) {
+    // Get token from header
+    const token = req.headers.authorization.split(" ")[1];
+    // Verify token
+    const decode = jwt.verify(token, process.env.JWT_SECRET);
+    // Attach token with request
+    req.user = decode;
+    next();
+  } else {
+    return res.status(400).json({ message: "Unauthorized" });
+  }
+};

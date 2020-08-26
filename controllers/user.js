@@ -48,3 +48,20 @@ exports.getUser = async (req, res) => {
     return res.status(400).json({ error: err.message });
   }
 };
+
+// Update user
+exports.updateUser = async (req, res) => {
+  // Check authorization
+  if (req.params.userId !== req.user._id) {
+    return res.status(403).json({ message: "Access Denied" });
+  }
+  try {
+    await User.findOneAndUpdate(req.params.userId, req.body, {
+      new: true,
+    }).select("-password -__v");
+    return res.status(200).json({ message: "User updated successfully" });
+  } catch (err) {
+    console.log(err);
+    return res.status(400).json({ error: err.message });
+  }
+};
