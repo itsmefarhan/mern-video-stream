@@ -10,6 +10,15 @@ exports.validateRegister = [
   ],
 ];
 
+exports.validateLogin = [
+  [
+    check("email").isEmail().withMessage("Email must be valid"),
+    check("password")
+      .isLength({ min: 6 })
+      .withMessage("Password must be at least 6 characters long"),
+  ],
+];
+
 exports.validationErrors = (req, res, next) => {
   const errors = validationResult(req);
 
