@@ -32,3 +32,19 @@ exports.getUsers = async (req, res) => {
     return res.status(400).json({ error: err.message });
   }
 };
+
+// Get user by id
+exports.getUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userId).select(
+      "-password -__v"
+    );
+    if (!user) {
+      return res.status(400).json({ message: "User not found" });
+    }
+    return res.status(200).json(user);
+  } catch (err) {
+    console.log(err);
+    return res.status(400).json({ error: err.message });
+  }
+};
