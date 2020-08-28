@@ -55,6 +55,7 @@ exports.updateUser = async (req, res) => {
   if (req.params.userId !== req.user._id) {
     return res.status(403).json({ message: "Access Denied" });
   }
+
   try {
     await User.findOneAndUpdate(req.params.userId, req.body, {
       new: true,

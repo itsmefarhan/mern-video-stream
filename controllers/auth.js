@@ -30,8 +30,19 @@ exports.login = async (req, res) => {
   }
 };
 
+// Get logged in user
+exports.loggedInUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).select("-password -__v");
+    res.json(user);
+  } catch (error) {
+    // console.log(err);
+    return res.status(400).json({ error: err.message });
+  }
+};
+
 // Authenticate user middleware
-exports.requireLogin = (req, res, next) => {  
+exports.requireLogin = (req, res, next) => {
   if (req.headers.authorization) {
     // Get token from header
     const token = req.headers.authorization.split(" ")[1];

@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
 require("dotenv").config();
+const cors = require("cors");
 
 // Connect DB
 mongoose
@@ -14,6 +15,7 @@ mongoose
   .then(() => console.log("MongoDB is connected"))
   .catch((err) => console.log(err));
 
+app.use(cors());
 // Body parser
 app.use(express.json());
 
