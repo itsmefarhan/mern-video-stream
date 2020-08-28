@@ -44,7 +44,7 @@ const EditProfile = (props) => {
       props.history.push("/");
     }
 
-    if (message !== null) {
+    if (message !== null && message !== "Email already exists") {
       setOpen(true);
     }
   }, [message, loggedInUser]);
@@ -79,7 +79,11 @@ const EditProfile = (props) => {
               <InputLabel htmlFor="email">Email</InputLabel>
               <Input name="email" value={email} onChange={handleChange} />
             </FormControl>
-
+            {message && message === "Email already exists" ? (
+              <Typography variant="caption" color="error">
+                {message}
+              </Typography>
+            ) : null}
             <div className={classes.btn}>
               <Button
                 variant="contained"

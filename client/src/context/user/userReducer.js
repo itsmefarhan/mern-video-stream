@@ -17,6 +17,11 @@ export default (state, action) => {
         ...state,
         message: action.payload,
       };
+      case "UPDATE_FAIL":
+        return {
+          ...state,
+          message: action.payload,
+        };
 
     default:
       return state;

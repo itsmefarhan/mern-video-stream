@@ -57,6 +57,15 @@ exports.updateUser = async (req, res) => {
   }
 
   try {
+    // find email in db
+    let check = await User.findOne({ email: req.body.email });
+    // find user by params id
+    let currentUser = await User.findById(req.params.userId);
+
+    // if logged in user email = body or email in db = body
+    if (currentUser.email !== req.body.email || check._id === req.body.email) {
+      return res.status(400).json({ message: "Email already exists" });
+    }
     await User.findOneAndUpdate(req.params.userId, req.body, {
       new: true,
     }).select("-password -__v");

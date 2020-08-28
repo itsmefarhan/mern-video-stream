@@ -45,6 +45,7 @@ const UserContextProvider = ({ children }) => {
       });
       dispatch({ type: "UPDATE_USER", payload: res.data });
     } catch (err) {
+      dispatch({ type: "UPDATE_FAIL", payload: err.response.data.message });
       console.log(err);
     }
   };
