@@ -15,7 +15,7 @@ import Divider from "@material-ui/core/Divider";
 import { makeStyles } from "@material-ui/core/styles";
 import { Link } from "react-router-dom";
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   paper: {
     margin: "0 auto",
     width: "70%",
@@ -36,32 +36,38 @@ const Users = () => {
 
   return (
     <Paper className={classes.paper} elevation={5}>
-      <Typography variant="h6">All Users</Typography>
-      <Divider />
-      <List>
-        {users &&
-          users.map((user) => (
-            <Link
-              key={user._id}
-              to={`/user/${user._id}`}
-              className={classes.link}
-            >
-              <ListItem button>
-                <ListItemAvatar>
-                  <Avatar>
-                    <Person />
-                  </Avatar>
-                </ListItemAvatar>
-                <ListItemText primary={user.name} />
-                <ListItemSecondaryAction>
-                  <IconButton>
-                    <ArrowForward />
-                  </IconButton>
-                </ListItemSecondaryAction>
-              </ListItem>
-            </Link>
-          ))}
-      </List>
+      {users && !users.length ? (
+        <Typography variant="body1" align="center">
+          No users found
+        </Typography>
+      ) : (
+        <>
+          <Typography variant="h6">All Users</Typography>
+          <Divider />
+          <List>
+            {users &&
+              users.map((user) => (
+                <Link
+                  key={user._id}
+                  to={`/user/${user._id}`}
+                  className={classes.link}
+                >
+                  <ListItem button>
+                    <ListItemAvatar>
+                      <Avatar src={user.avatar} />
+                    </ListItemAvatar>
+                    <ListItemText primary={user.name} />
+                    <ListItemSecondaryAction>
+                      <IconButton>
+                        <ArrowForward />
+                      </IconButton>
+                    </ListItemSecondaryAction>
+                  </ListItem>
+                </Link>
+              ))}
+          </List>
+        </>
+      )}
     </Paper>
   );
 };

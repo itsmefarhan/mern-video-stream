@@ -32,6 +32,8 @@ const Register = (props) => {
     name: "",
     email: "",
     password: "",
+    about: "",
+    avatar: "",
   });
   const [errorMsg, setErrorMsg] = useState(null);
   const [open, setOpen] = useState(false);
@@ -55,7 +57,7 @@ const Register = (props) => {
     }
   }, [error, message, isAuthenticated, props.history]);
 
-  const { name, email, password } = user;
+  const { name, email, password, about, avatar } = user;
 
   const handleChange = (e) => {
     setUser({ ...user, [e.target.name]: e.target.value });
@@ -64,7 +66,7 @@ const Register = (props) => {
   const handleSubmit = () => {
     setErrorMsg(null);
 
-    register({ name, email, password });
+    register({ name, email, password, about, avatar });
   };
 
   // On modal close

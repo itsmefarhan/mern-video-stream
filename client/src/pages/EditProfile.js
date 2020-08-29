@@ -11,6 +11,7 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import { makeStyles } from "@material-ui/core/styles";
 import { UserContext } from "../context/user/userContext";
 import { AuthContext } from "../context/auth/authContext";
+import axios from "axios";
 
 const useStyles = makeStyles(() => ({
   paper: {
@@ -33,11 +34,15 @@ const EditProfile = (props) => {
   const { loggedInUser, isAuthenticated } = useContext(AuthContext);
 
   const [user, setUser] = useState({
-    name: loggedInUser !== null ? loggedInUser.name : "",
-    email: loggedInUser !== null ? loggedInUser.email : "",
+    name: loggedInUser !== null && loggedInUser.name,
+    email: loggedInUser !== null && loggedInUser.email,
+    about: loggedInUser !== null && loggedInUser.about,
+    avatar: loggedInUser !== null && loggedInUser.avatar,
   });
 
   const [open, setOpen] = useState(false);
+
+  const { name, email, about, avatar } = user;
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -49,14 +54,30 @@ const EditProfile = (props) => {
     }
   }, [message, loggedInUser]);
 
-  const { name, email } = user;
+  // Handle photo field change
+  const handleFile = (e) => {
+    const file = e.target.files[0];
 
+    const uploadPhoto = new FormData();
+    uploadPhoto.append("file", file);
+    uploadPhoto.append("upload_preset", "social_meetup");
+    uploadPhoto.append("cloud_name", "itsmefarhan");
+    axios
+      .post(
+        `https://api.cloudinary.com/v1_1/itsmefarhan/image/upload`,
+        uploadPhoto
+      )
+      .then((res) => setUser({ ...user, avatar: res.data.secure_url }))
+      .catch((e) => console.log("e", e));
+  };
+
+  // Handle form fields change
   const handleChange = (e) => {
     setUser({ ...user, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = () => {
-    updateUser(props.match.params.id, { name, email });
+    updateUser(props.match.params.id, { name, email, about, avatar });
   };
 
   // On modal close
@@ -72,12 +93,33 @@ const EditProfile = (props) => {
           </Typography>
           <Paper elevation={10} className={classes.paper}>
             <FormControl fullWidth className={classes.form}>
+              <input
+                type="file"
+                accept="image/*"
+                name="avatar"
+                onChange={handleFile}
+                id="icon-button-file"
+              />
+            </FormControl>
+
+            <FormControl fullWidth className={classes.form}>
               <InputLabel htmlFor="name">Name</InputLabel>
               <Input name="name" value={name} onChange={handleChange} />
             </FormControl>
             <FormControl fullWidth className={classes.form}>
               <InputLabel htmlFor="email">Email</InputLabel>
               <Input name="email" value={email} onChange={handleChange} />
+            </FormControl>
+            <FormControl fullWidth className={classes.form}>
+              <InputLabel htmlFor="about">About</InputLabel>
+              <Input
+                name="about"
+                value={about}
+                onChange={handleChange}
+                multiline
+                rows={3}
+                id="multiline-flexible"
+              />
             </FormControl>
             {message && message === "Email already exists" ? (
               <Typography variant="caption" color="error">
