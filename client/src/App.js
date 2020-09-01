@@ -4,13 +4,13 @@ import { BrowserRouter, Switch, Route } from "react-router-dom";
 import AuthContextProvider from "./context/auth/authContext";
 import UserContextProvider from "./context/user/userContext";
 import Home from "./pages/Home";
-import Register from "./pages/Register";
-import Login from "./pages/Login";
+import Register from "./pages/auth/Register";
+import Login from "./pages/auth/Login";
 import Menu from "./components/Menu";
 import PrivateRoute from "./components/PrivateRoute";
-import Users from "./pages/Users";
-import Profile from "./pages/Profile";
-import EditProfile from "./pages/EditProfile";
+import Users from "./pages/profile/Users";
+import Profile from "./pages/profile/Profile";
+import EditProfile from "./pages/profile/EditProfile";
 
 const App = () => {
   return (

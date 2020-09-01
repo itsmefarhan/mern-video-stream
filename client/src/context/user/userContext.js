@@ -1,24 +1,19 @@
-import React, { createContext, useReducer } from "react";
-import userReducer from "./userReducer";
+import React, { createContext, useState } from "react";
 import axios from "axios";
 
 export const UserContext = createContext();
 
-const initialState = {
-  users: null,
-  user: null,
-  error: null,
-  message: null,
-};
-
 const UserContextProvider = ({ children }) => {
-  const [state, dispatch] = useReducer(userReducer, initialState);
+  const [users, setUsers] = useState([]);
+  const [user, setUser] = useState({});
+  const [error, setError] = useState(null);
+  const [message, setMessage] = useState(null);
 
   const getUsers = async () => {
     try {
       const res = await axios.get("http://localhost:5000/api/users");
       // console.log(res.data);
-      dispatch({ type: "GET_USERS", payload: res.data });
+      setUsers(res.data);
     } catch (err) {
       console.log(err);
     }
@@ -28,7 +23,7 @@ const UserContextProvider = ({ children }) => {
   const getUser = async (id) => {
     try {
       const res = await axios.get(`/api/users/${id}`);
-      dispatch({ type: "GET_USER", payload: res.data });
+      setUser(res.data);
     } catch (err) {
       console.log(err);
     }
@@ -43,9 +38,9 @@ const UserContextProvider = ({ children }) => {
           Authorization: "Bearer " + localStorage.getItem("token"),
         },
       });
-      dispatch({ type: "UPDATE_USER", payload: res.data });
+      setMessage(res.data);
     } catch (err) {
-      dispatch({ type: "UPDATE_FAIL", payload: err.response.data.message });
+      setError(err.response.data.message);
       console.log(err);
     }
   };
@@ -53,10 +48,10 @@ const UserContextProvider = ({ children }) => {
   return (
     <UserContext.Provider
       value={{
-        users: state.users,
-        user: state.user,
-        error: state.error,
-        message: state.message,
+        users,
+        user,
+        error,
+        message,
         getUsers,
         getUser,
         updateUser,

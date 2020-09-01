@@ -3,7 +3,7 @@ import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
-import { Link } from "react-router-dom";
+import { Link, withRouter } from "react-router-dom";
 import { AuthContext } from "../context/auth/authContext";
 
 const useStyles = makeStyles((theme) => ({
@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Menu = () => {
+const Menu = (props) => {
   const classes = useStyles();
   const { loadUser, isAuthenticated, logout } = useContext(AuthContext);
 
@@ -31,6 +31,11 @@ const Menu = () => {
     loadUser();
     // eslint-disable-next-line
   }, []);
+
+  const handleLogout = () => {
+    logout();
+    props.history.push("/");
+  };
 
   return (
     <>
@@ -43,7 +48,7 @@ const Menu = () => {
             Users
           </Link>
           {isAuthenticated ? (
-            <Link to="#!" className={classes.links} onClick={logout}>
+            <Link to="#!" className={classes.links} onClick={handleLogout}>
               Logout
             </Link>
           ) : (
@@ -63,4 +68,4 @@ const Menu = () => {
   );
 };
 
-export default Menu;
+export default withRouter(Menu);

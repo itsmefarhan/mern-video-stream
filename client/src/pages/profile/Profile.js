@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from "react";
-import { UserContext } from "../context/user/userContext";
-import { AuthContext } from "../context/auth/authContext";
+import { UserContext } from "../../context/user/userContext";
+import { AuthContext } from "../../context/auth/authContext";
 import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
 import List from "@material-ui/core/List";
@@ -48,7 +48,7 @@ const Profile = (props) => {
       props.history.push("/login");
     }
   };
-  console.log('profile', loggedInUser)
+  // console.log('profile', loggedInUser)
   return (
     user && (
       <Paper className={classes.paper} elevation={5}>

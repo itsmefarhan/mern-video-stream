@@ -7,7 +7,7 @@ import InputLabel from "@material-ui/core/InputLabel";
 import Input from "@material-ui/core/Input";
 import Button from "@material-ui/core/Button";
 import { makeStyles } from "@material-ui/core/styles";
-import { AuthContext } from "../context/auth/authContext";
+import { AuthContext } from "../../context/auth/authContext";
 
 const useStyles = makeStyles(() => ({
   paper: {

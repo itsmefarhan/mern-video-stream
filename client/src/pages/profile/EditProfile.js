@@ -9,8 +9,8 @@ import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import { makeStyles } from "@material-ui/core/styles";
-import { UserContext } from "../context/user/userContext";
-import { AuthContext } from "../context/auth/authContext";
+import { UserContext } from "../../context/user/userContext";
+import { AuthContext } from "../../context/auth/authContext";
 import axios from "axios";
 
 const useStyles = makeStyles(() => ({
