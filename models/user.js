@@ -24,10 +24,6 @@ const UserSchema = new mongoose.Schema(
     avatar: {
       type: String,
     },
-    seller: {
-      type: Boolean,
-      default: false,
-    },
   },
   { timestamps: true }
 );
