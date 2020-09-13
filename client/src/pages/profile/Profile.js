@@ -17,10 +17,10 @@ import IconButton from "@material-ui/core/IconButton";
 import { makeStyles } from "@material-ui/core/styles";
 import { Link } from "react-router-dom";
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   paper: {
     margin: "0 auto",
-    width: "70%",
+    width: "90%",
     padding: "20px",
   },
   link: {

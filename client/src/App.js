@@ -11,6 +11,7 @@ import PrivateRoute from "./components/PrivateRoute";
 import Users from "./pages/profile/Users";
 import Profile from "./pages/profile/Profile";
 import EditProfile from "./pages/profile/EditProfile";
+import UploadVideo from "./pages/UploadVideo";
 
 const App = () => {
   return (
@@ -23,6 +24,7 @@ const App = () => {
             <Route exact path="/register" component={Register} />
             <Route exact path="/login" component={Login} />
             <Route exact path="/users" component={Users} />
+            <PrivateRoute exact path="/upload" component={UploadVideo} />
             <Route exact path="/user/:id" component={Profile} />
             <Route exact path="/user/edit/:id" component={EditProfile} />
           </Switch>

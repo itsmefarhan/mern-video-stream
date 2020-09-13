@@ -25,8 +25,8 @@ const useStyles = makeStyles((theme) => ({
 
 const Menu = (props) => {
   const classes = useStyles();
-  const { loadUser, isAuthenticated, logout } = useContext(AuthContext);
-
+  const { loadUser, isAuthenticated, logout, loggedInUser } = useContext(AuthContext);
+  
   useEffect(() => {
     loadUser();
     // eslint-disable-next-line
@@ -39,18 +39,26 @@ const Menu = (props) => {
 
   return (
     <>
-      <AppBar position="static">
+      <AppBar position="static" color="secondary">
         <Toolbar>
           <Link to="/" className={classes.title}>
-            <Typography variant="h6">MERN Boilerplate</Typography>
+            <Typography variant="h6">Let's Watch</Typography>
           </Link>
           <Link to="/users" className={classes.links}>
             Users
           </Link>
           {isAuthenticated ? (
-            <Link to="#!" className={classes.links} onClick={handleLogout}>
-              Logout
-            </Link>
+            <>
+              <Link to={`/user/${loggedInUser._id}`} className={classes.links}>
+                Profile
+              </Link>
+              <Link to={`/upload`} className={classes.links}>
+                Upload
+              </Link>
+              <Link to="#!" className={classes.links} onClick={handleLogout}>
+                Logout
+              </Link>
+            </>
           ) : (
             <>
               <Link to="/register" className={classes.links}>

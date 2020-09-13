@@ -84,7 +84,7 @@ exports.deleteUser = async (req, res) => {
     return res.status(403).json({ message: "Access Denied" });
   }
   try {
-    await User.findOneAndDelete(req.params.userId);
+    await User.findOneAndDelete(req.user._id);
     return res.status(200).json({ message: "User deleted successfully" });
   } catch (err) {
     console.log(err);
