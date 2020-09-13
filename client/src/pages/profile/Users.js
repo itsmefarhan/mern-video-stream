@@ -10,7 +10,6 @@ import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import IconButton from "@material-ui/core/IconButton";
 import ArrowForward from "@material-ui/icons/ArrowForward";
 import Avatar from "@material-ui/core/Avatar";
-import Person from "@material-ui/icons/Person";
 import Divider from "@material-ui/core/Divider";
 import { makeStyles } from "@material-ui/core/styles";
 import { Link } from "react-router-dom";
@@ -32,6 +31,7 @@ const Users = () => {
 
   useEffect(() => {
     getUsers();
+    // eslint-disable-next-line
   }, []);
 
   return (

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import FileUpload from "@material-ui/icons/CloudUpload";
 import LoopIcon from "@material-ui/icons/Loop";
 import {
@@ -12,6 +12,7 @@ import {
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import axios from "axios";
+import { AuthContext } from "../context/auth/authContext";
 
 function LinearProgressWithLabel(props) {
   return (
@@ -56,60 +57,72 @@ const UploadVideo = (props) => {
 
   const [data, setData] = useState({
     title: "",
-    video: "",
     description: "",
-    genre: "",
-    mediaId: "",
-    percent: 0,
+    privacy: "public",
+    genre: "it",
+    filePath: "",
     loading: false,
   });
+  const [percent, setPercent] = useState(0);
+
+  const { title, description, privacy, genre, filePath } = data;
+
+  const { loggedInUser } = useContext(AuthContext);
 
   const handleChange = (name) => (e) => {
-    const value = name === "video" ? e.target.files[0] : e.target.value;
-    setData({ ...data, [name]: value });
-    console.log(name === "video" && name);
+    setData({ ...data, [name]: e.target.value });
   };
 
-  const handleSubmit = async () => {
+  const handleChangeVideo = async (e) => {
     let formData = new FormData();
-    data.video && formData.append("video", data.video);
-    data.title && formData.append("title", data.title);
-    data.description && formData.append("description", data.description);
-    data.genre && formData.append("genre", data.genre);
-
-    const options = {
-      onUploadProgress: (progressEvent) => {
-        const { loaded, total } = progressEvent;
-        let percent = Math.floor((loaded * 100) / total);
-        console.log(`${loaded}kb of ${total}kb | ${percent}%`);
-
-        if (percent < 100) {
-          setData({ ...data, percent });
-        }
-      },
-    };
-
-    setData({ ...data, loading: true });
-    const res = await axios.post(`/api/media/upload`, formData, {
+    const config = {
       headers: {
         "Content-Type": "multipart/form-data",
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
-      options,
-    });
-    setData({ ...data, mediaId: res.data._id, percent: 100, loading: false });
-    props.history.push("/");
-    // uploadVideo(formData).
-    // uploadVideo(formData).then((res) => {
-    //   if (res.error) {
-    //     console.log(res.error);
-    //   } else {
-    //     // setData({ ...res, mediaId: res._id });
-    //     console.log(res)
-    //   }
-    // });
+      onUploadProgress: (progressEvent) => {
+        const { loaded, total } = progressEvent;
+        let percent = Math.floor((loaded * 100) / total);
+        setPercent(percent);
+      },
+    };
+    formData.append("file", e.target.files[0]);
+
+    try {
+      const videoResponse = await axios.post(
+        "/api/media/upload",
+        formData,
+        config
+      );
+      setData({ ...data, filePath: videoResponse.data.filePath });
+    } catch (err) {
+      console.log(err);
+    }
   };
-  console.log(data);
+
+  const handleSubmit = async () => {
+    if (!title || !description || !filePath) {
+      return alert("All fields are required");
+    }
+    const formData = {
+      title,
+      description,
+      filePath,
+      privacy,
+      genre,
+      postedBy: loggedInUser,
+    };
+    setData({ ...data, loading: true });
+    await axios.post(`/api/media/new`, formData, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+    setData({ ...data, loading: false });
+    props.history.push("/");
+  };
+
   return (
     <Paper className={classes.paper} elevation={3}>
       <Typography variant="h5" className={classes.heading}>
@@ -121,7 +134,8 @@ const UploadVideo = (props) => {
           accept="video/*"
           id="icon-button-file"
           className={classes.input}
-          onChange={handleChange("video")}
+          name="video"
+          onChange={handleChangeVideo}
         />
         <label htmlFor="icon-button-file">
           <FileUpload
@@ -129,7 +143,7 @@ const UploadVideo = (props) => {
             color="primary"
           />
         </label>
-        {data.percent > 0 && <LinearProgressWithLabel value={data.percent} />}
+        {percent > 0 && <LinearProgressWithLabel value={percent} />}
         <TextField
           label="Title"
           margin="normal"
@@ -145,8 +159,12 @@ const UploadVideo = (props) => {
           value={data.description}
           onChange={handleChange("description")}
         />
+        <select className={classes.select} onChange={handleChange("privacy")}>
+          <option value="public">Public</option>
+          <option value="private">Private</option>
+        </select>
+
         <select className={classes.select} onChange={handleChange("genre")}>
-          <option value="">Genre</option>
           <option value="it">IT</option>
           <option value="entertainment">Entertainment</option>
           <option value="sports">Sports</option>

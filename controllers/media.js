@@ -1,35 +1,50 @@
-const mongoose = require("mongoose");
-const formidable = require("formidable");
+const multer = require("multer");
 const Media = require("../models/media");
 const User = require("../models/user");
-const fs = require("fs");
+// const ffmpeg = require("fluent-ffmpeg");
 
-let gridfs = null;
-mongoose.connection.on("connected", () => {
-  gridfs = new mongoose.mongo.GridFSBucket(mongoose.connection.db);
+let storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/");
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()} - ${file.originalname}`);
+  },
+  fileFilter: (req, file, cb) => {
+    const ext = path.extname(file.originalname);
+    if (ext !== ".mp4") {
+      return cb(res.status(400).end("Only mp4 files are allowed"), false);
+    }
+    cb(null, true);
+  },
 });
 
-exports.uploadVideo = async (req, res) => {
-  let form = formidable.IncomingForm();
-  form.keepExtensions = true;
+let upload = multer({ storage }).single("file");
 
+exports.uploadVideo = async (req, res) => {
   try {
-    const user = await User.findById(req.user._id).select("-password -__v");
-    form.parse(req, async (err, fields, files) => {
-      if (err) {
-        return res.status(400).json({ error: "Video could not be uploaded" });
+    upload(req, res, (error) => {
+      if (error) {
+        return res.status(400).json({ success: false, error });
       }
-      let media = new Media(fields);
-      media.postedBy = user;
-      if (files.video) {
-        let writeStream = gridfs.openUploadStream(media._id, {
-          contentType: files.video.type || "binary/octet-stream",
-        });
-        fs.createReadStream(files.video.path).pipe(writeStream);
-      }
-      await media.save();
-      res.json(media);
+
+      return res.json({
+        success: true,
+        filePath: req.file.path,
+        fileName: req.file.filename,
+      });
     });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+exports.newMedia = async (req, res) => {
+  try {
+    const media = new Media(req.body);
+    await media.save();
+
+    res.json({ success: true });
   } catch (err) {
     console.log(err);
   }

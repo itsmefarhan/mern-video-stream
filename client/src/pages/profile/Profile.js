@@ -9,7 +9,6 @@ import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import ListItemText from "@material-ui/core/ListItemText";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import Avatar from "@material-ui/core/Avatar";
-import Person from "@material-ui/icons/Person";
 import Divider from "@material-ui/core/Divider";
 import Edit from "@material-ui/icons/Edit";
 import Delete from "@material-ui/icons/Delete";
@@ -37,6 +36,7 @@ const Profile = (props) => {
 
   useEffect(() => {
     getUser(id);
+    // eslint-disable-next-line
   }, []);
 
   const handleDelete = () => {

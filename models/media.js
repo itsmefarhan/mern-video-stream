@@ -5,12 +5,17 @@ const MediaSchema = new mongoose.Schema(
     title: {
       type: String,
       trim: true,
-      required: true,
     },
     description: {
       type: String,
     },
+    privacy: {
+      type: String,
+    },
     genre: {
+      type: String,
+    },
+    filePath: {
       type: String,
     },
     views: {
