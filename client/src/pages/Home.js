@@ -9,7 +9,7 @@ const useStyles = makeStyles(() => ({
   divider: {
     margin: "10px 0px",
   },
-  paper: {
+  div: {
     padding: "10px",
   },
   link: {
@@ -24,7 +24,7 @@ const Home = () => {
   useEffect(() => {
     axios.get("/api/media").then((res) => setData(res.data));
   }, []);
-  console.log(data);
+  
   return (
     <div>
       <Typography variant="h5" color="textSecondary">
@@ -41,7 +41,7 @@ const Home = () => {
                   width={"100%"}
                   height="auto"
                 />
-                <div className={classes.paper}>
+                <div className={classes.div}>
                   <Typography variant="h6">{vid.title}</Typography>
                   <Typography variant="body1">{vid.postedBy.name}</Typography>
                   <Typography variant="caption">

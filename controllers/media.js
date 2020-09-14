@@ -72,3 +72,19 @@ exports.getVideo = async (req, res) => {
     console.log(err);
   }
 };
+
+exports.getRelatedVideos = async (req, res) => {
+  try {
+    const media = await Media.findById(req.params.videoId).populate(
+      "postedBy",
+      "_id name email"
+    );
+    const videos = await Media.find({
+      _id: { $ne: media },
+      genre: media.genre,
+    });
+    res.json(videos);
+  } catch (err) {
+    console.log(err);
+  }
+};
