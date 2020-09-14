@@ -39,12 +39,35 @@ exports.uploadVideo = async (req, res) => {
   }
 };
 
-exports.newMedia = async (req, res) => {
+exports.newVideo = async (req, res) => {
   try {
     const media = new Media(req.body);
     await media.save();
 
     res.json({ success: true });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+exports.getVideos = async (req, res) => {
+  try {
+    const media = await Media.find()
+      .populate("postedBy", "_id name email")
+      .sort("-createdAt");
+    res.json(media);
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+exports.getVideo = async (req, res) => {
+  try {
+    const media = await Media.findById(req.params.videoId).populate(
+      "postedBy",
+      "_id name email"
+    );
+    res.json(media);
   } catch (err) {
     console.log(err);
   }
