@@ -7,9 +7,11 @@ const {
   getVideos,
   getRelatedVideos,
   getVideo,
+  getSubscriptions,
 } = require("../controllers/media");
 
 router.route("/upload").post(requireLogin, uploadVideo);
+router.route("/subscriptions").get(requireLogin, getSubscriptions);
 router.route("/new").post(requireLogin, newVideo);
 router.route("/").get(getVideos);
 router.route("/related/:videoId").get(getRelatedVideos);

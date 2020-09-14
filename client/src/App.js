@@ -14,6 +14,7 @@ import Profile from "./pages/profile/Profile";
 import EditProfile from "./pages/profile/EditProfile";
 import UploadVideo from "./pages/UploadVideo";
 import Video from "./pages/Video";
+import Subscriptions from "./pages/Subscriptions";
 
 const App = () => {
   return (
@@ -28,6 +29,11 @@ const App = () => {
               <Route exact path="/login" component={Login} />
               <Route exact path="/users" component={Users} />
               <PrivateRoute exact path="/upload" component={UploadVideo} />
+              <PrivateRoute
+                exact
+                path="/subscriptions"
+                component={Subscriptions}
+              />
               <Route exact path="/video/:id" component={Video} />
               <Route exact path="/user/:id" component={Profile} />
               <Route exact path="/user/edit/:id" component={EditProfile} />

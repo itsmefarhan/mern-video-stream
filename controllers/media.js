@@ -88,3 +88,15 @@ exports.getRelatedVideos = async (req, res) => {
     console.log(err);
   }
 };
+
+exports.getSubscriptions = async (req, res) => {
+  try {
+    const user = await User.find({ subscriber: { $in: req.user._id } }).select(
+      "-password -__v"
+    );
+    const media = await Media.find({ postedBy: { $in: user } }).populate('postedBy', '_id name email').sort('-createdAt');
+    res.json(media);
+  } catch (err) {
+    console.log(err);
+  }
+};

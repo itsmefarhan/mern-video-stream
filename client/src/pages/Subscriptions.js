@@ -8,27 +8,26 @@ const useStyles = makeStyles(() => ({
   divider: {
     margin: "10px 0px",
   },
-  div: {
-    padding: "10px",
-  },
-  link: {
-    textDecoration: "none",
-    color: "black",
-  },
 }));
 
-const Home = () => {
+const Subscriptions = () => {
   const classes = useStyles();
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    axios.get("/api/media").then((res) => setData(res.data));
+    axios
+      .get("/api/media/subscriptions", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      })
+      .then((res) => setData(res.data));
   }, []);
 
   return (
     <div>
       <Typography variant="h5" color="textSecondary">
-        Latest
+        Subscriptions
       </Typography>
       <Divider className={classes.divider} />
       <Videos data={data} />
@@ -36,4 +35,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default Subscriptions;

@@ -25,8 +25,10 @@ const useStyles = makeStyles((theme) => ({
 
 const Menu = (props) => {
   const classes = useStyles();
-  const { loadUser, isAuthenticated, logout, loggedInUser } = useContext(AuthContext);
-  
+  const { loadUser, isAuthenticated, logout, loggedInUser } = useContext(
+    AuthContext
+  );
+
   useEffect(() => {
     loadUser();
     // eslint-disable-next-line
@@ -44,11 +46,14 @@ const Menu = (props) => {
           <Link to="/" className={classes.title}>
             <Typography variant="h6">Let's Watch</Typography>
           </Link>
-          <Link to="/users" className={classes.links}>
+          {/* <Link to="/users" className={classes.links}>
             Users
-          </Link>
+          </Link> */}
           {isAuthenticated ? (
             <>
+              <Link to="/subscriptions" className={classes.links}>
+                Subscriptions
+              </Link>
               <Link to={`/user/${loggedInUser._id}`} className={classes.links}>
                 Profile
               </Link>

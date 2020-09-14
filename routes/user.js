@@ -14,16 +14,10 @@ const {
 const { validateRegister, validationErrors } = require("../validators/auth");
 const { requireLogin } = require("../controllers/auth");
 
+router.route("/subscribe").put(requireLogin, addSubscription, addSubscriber);
 router
-  .route("/")
-  .post(validateRegister, validationErrors, register)
-  .get(getUsers);
-
-  router.route("/subscribe").put(requireLogin, addSubscription, addSubscriber);
-  router
-    .route("/unsubscribe")
-    .put(requireLogin, removeSubscription, removeSubscriber);
-  
+  .route("/unsubscribe")
+  .put(requireLogin, removeSubscription, removeSubscriber);
 
 router
   .route("/:userId")
@@ -31,6 +25,9 @@ router
   .put(requireLogin, updateUser)
   .delete(requireLogin, deleteUser);
 
-
+router
+  .route("/")
+  .post(validateRegister, validationErrors, register)
+  .get(getUsers);
 
 module.exports = router;
