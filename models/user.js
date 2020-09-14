@@ -24,6 +24,18 @@ const UserSchema = new mongoose.Schema(
     avatar: {
       type: String,
     },
+    subscribe: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    subscriber: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
   },
   { timestamps: true }
 );

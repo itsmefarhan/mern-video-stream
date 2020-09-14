@@ -1,19 +1,23 @@
-import React, { createContext, useState } from "react";
+import React, { createContext, useReducer } from "react";
+import userReducer from "./userReducer";
 import axios from "axios";
 
 export const UserContext = createContext();
 
+const initialState = {
+  users: null,
+  user: null,
+  error: null,
+  message: null,
+};
+
 const UserContextProvider = ({ children }) => {
-  const [users, setUsers] = useState([]);
-  const [user, setUser] = useState({});
-  const [error, setError] = useState(null);
-  const [message, setMessage] = useState(null);
+  const [state, dispatch] = useReducer(userReducer, initialState);
 
   const getUsers = async () => {
     try {
       const res = await axios.get("http://localhost:5000/api/users");
-      // console.log(res.data);
-      setUsers(res.data);
+      dispatch({ type: "GET_USERS", payload: res.data });
     } catch (err) {
       console.log(err);
     }
@@ -23,7 +27,7 @@ const UserContextProvider = ({ children }) => {
   const getUser = async (id) => {
     try {
       const res = await axios.get(`/api/users/${id}`);
-      setUser(res.data);
+      dispatch({ type: "GET_USER", payload: res.data });
     } catch (err) {
       console.log(err);
     }
@@ -38,9 +42,45 @@ const UserContextProvider = ({ children }) => {
           Authorization: "Bearer " + localStorage.getItem("token"),
         },
       });
-      setMessage(res.data);
+      dispatch({ type: "UPDATE_USER", payload: res.data });
     } catch (err) {
-      setError(err.response.data.message);
+      dispatch({ type: "UPDATE_FAIL", payload: err.response.data.message });
+      console.log(err);
+    }
+  };
+
+  const sub = async (userId, subId) => {
+    try {
+      const res = await axios.put(
+        "/api/users/subscribe",
+        { userId, subId },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      dispatch({ type: "SUB", payload: res.data });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const unsub = async (userId, unsubId) => {
+    try {
+      const res = await axios.put(
+        "/api/users/unsubscribe",
+        { userId, unsubId },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      dispatch({ type: "UNSUB", payload: res.data });
+    } catch (err) {
       console.log(err);
     }
   };
@@ -48,13 +88,15 @@ const UserContextProvider = ({ children }) => {
   return (
     <UserContext.Provider
       value={{
-        users,
-        user,
-        error,
-        message,
+        users: state.users,
+        user: state.user,
+        error: state.error,
+        message: state.message,
         getUsers,
         getUser,
         updateUser,
+        sub,
+        unsub,
       }}
     >
       {children}

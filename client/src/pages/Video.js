@@ -1,9 +1,22 @@
-import React, { useEffect, useState } from "react";
-import { Grid, Typography, Paper } from "@material-ui/core";
+import React, { useEffect, useState, useContext } from "react";
+import {
+  Grid,
+  Typography,
+  Divider,
+  Button,
+  Paper,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  ListItemSecondaryAction,
+} from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import ReactPlayer from "react-player";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { AuthContext } from "../context/auth/authContext";
+import { UserContext } from "../context/user/userContext";
 
 const useStyles = makeStyles(() => ({
   sideGrid: {
@@ -20,22 +33,31 @@ const Video = ({ match }) => {
   const { id } = match.params;
   const [video, setVideo] = useState({});
   const [videos, setVideos] = useState([]);
+  const { loggedInUser } = useContext(AuthContext);
+  const { sub, unsub, user, getUser } = useContext(UserContext);
 
   useEffect(() => {
     axios
       .get(`/api/media/${id}`)
-      .then((res) => setVideo(res.data))
-      .catch((e) => console.log(e));
+      .then((res) => {
+        setVideo(res.data);
+        getUser(res.data.postedBy && res.data.postedBy._id);
+      })
 
+      .catch((e) => console.log(e));
+  }, [id, user && user.count]);
+
+  useEffect(() => {
     axios
       .get(`/api/media/related/${id}`)
       .then((res) => setVideos(res.data))
       .catch((e) => console.log(e));
-  }, [id]);
+  }, []);
 
   return (
     <>
       <Grid container spacing={1}>
+        {/* Video Section */}
         <Grid item xs={12} sm={8}>
           <ReactPlayer
             url={`/${video.filePath}`}
@@ -43,14 +65,63 @@ const Video = ({ match }) => {
             width="100%"
             height="auto"
           />
-          <Typography variant="h6">{video.title}</Typography>
-          <Typography variant="body1">
-            {video.postedBy && video.postedBy.name}
-          </Typography>
-          <Typography variant="caption">
-            {video.views} views - {new Date(video.createdAt).toDateString()}
-          </Typography>
+          <List>
+            <ListItem>
+              <ListItemText
+                primary={video.title}
+                secondary={`${video.views} views - ${new Date(
+                  video.createdAt
+                ).toDateString()}`}
+              />
+            </ListItem>
+            <Divider />
+            <ListItem>
+              <ListItemAvatar />
+              <ListItemText
+                primary={video.postedBy && video.postedBy.name}
+                secondary={`${
+                  user && user.subscriber && user.subscriber.length
+                } subscribers`}
+              />
+              {loggedInUser &&
+                video.postedBy &&
+                loggedInUser._id !== video.postedBy._id && (
+                  <ListItemSecondaryAction>
+                    {user &&
+                    user.subscriber &&
+                    user.subscriber.includes(loggedInUser._id) ? (
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() =>
+                          unsub(
+                            loggedInUser && loggedInUser._id,
+                            video.postedBy && video.postedBy._id
+                          )
+                        }
+                      >
+                        SUBSCRIBED
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="contained"
+                        color="secondary"
+                        onClick={() =>
+                          sub(
+                            loggedInUser && loggedInUser._id,
+                            video.postedBy && video.postedBy._id
+                          )
+                        }
+                      >
+                        SUBSCRIBE
+                      </Button>
+                    )}
+                  </ListItemSecondaryAction>
+                )}
+            </ListItem>
+          </List>
         </Grid>
+        {/* Related Videos */}
         <Grid item xs={12} sm={4}>
           <Typography variant="h5" color="textSecondary">
             RELATED VIDEOS

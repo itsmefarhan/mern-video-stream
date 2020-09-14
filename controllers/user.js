@@ -91,3 +91,57 @@ exports.deleteUser = async (req, res) => {
     return res.status(400).json({ error: err.message });
   }
 };
+
+exports.addSubscription = async (req, res, next) => {
+  try {
+    await User.findByIdAndUpdate(req.body.userId, {
+      $push: { subscribe: req.body.subId },
+    });
+    next();
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+exports.addSubscriber = async (req, res) => {
+  try {
+    const result = await User.findByIdAndUpdate(
+      req.body.subId,
+      {
+        $push: { subscriber: req.body.userId },
+      },
+      { new: true }
+    )
+      .select("-password -__v")
+      .populate("subscribe", "_id name email")
+      .populate("subscriber", "_id name email");
+    res.json({ result, count: result.subscriber.length });
+  } catch (err) {
+    console.log(err);
+  }
+};
+exports.removeSubscription = async (req, res, next) => {
+  try {
+    await User.findByIdAndUpdate(req.body.userId, {
+      $pull: { subscribe: req.body.unsubId },
+    });
+    next();
+  } catch (err) {
+    console.log(err);
+  }
+};
+exports.removeSubscriber = async (req, res) => {
+  try {
+    const result = await User.findByIdAndUpdate(
+      req.body.unsubId,
+      { $pull: { subscriber: req.body.userId } },
+      { new: true }
+    )
+      .select("-password -__v")
+      .populate("subscribe", "_id name email")
+      .populate("subscriber", "_id name email");
+    res.json({ result, count: result.subscriber.length });
+  } catch (err) {
+    console.log(err);
+  }
+};

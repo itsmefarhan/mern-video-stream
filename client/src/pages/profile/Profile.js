@@ -33,7 +33,7 @@ const Profile = (props) => {
   const { loggedInUser, deleteUser } = useContext(AuthContext);
 
   const { id } = props.match.params;
-
+console.log(user)
   useEffect(() => {
     getUser(id);
     // eslint-disable-next-line
