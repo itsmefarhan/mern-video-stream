@@ -94,8 +94,49 @@ exports.getSubscriptions = async (req, res) => {
     const user = await User.find({ subscriber: { $in: req.user._id } }).select(
       "-password -__v"
     );
-    const media = await Media.find({ postedBy: { $in: user } }).populate('postedBy', '_id name email').sort('-createdAt');
+    const media = await Media.find({ postedBy: { $in: user } })
+      .populate("postedBy", "_id name email")
+      .sort("-createdAt");
     res.json(media);
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+exports.addComment = async (req, res) => {
+  try {
+    let media = await Media.findById(req.params.videoId);
+    media.comments.unshift(req.body);
+    await media.save();
+    res.json(media.comments);
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+exports.deleteComment = async (req, res) => {
+  try {
+    let media = await Media.findById(req.params.videoId);
+    let comment = await media.comments.find(
+      (com) => com._id.toString() === req.params.commentId
+    );
+    if (comment.postedBy._id.toString() !== req.user._id) {
+      return res.status(403).json({ error: "Access Denied" });
+    }
+    media.comments.splice(media.comments.indexOf(comment), 1);
+    await media.save();
+    res.json(media.comments);
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+exports.getComments = async (req, res) => {
+  try {
+    let media = await Media.findById(req.params.videoId).populate(
+      "comments.postedBy"
+    );
+    res.json({ result: media.comments });
   } catch (err) {
     console.log(err);
   }

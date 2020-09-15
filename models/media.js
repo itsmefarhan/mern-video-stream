@@ -26,6 +26,29 @@ const MediaSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
+    comments: [
+      {
+        postedBy: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        },
+        mediaId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Media",
+        },
+        repliedTo: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        },
+        content: {
+          type: String,
+        },
+        createdAt: {
+          type: Date,
+          default: Date.now
+        }
+      },
+    ],
   },
   { timestamps: true }
 );

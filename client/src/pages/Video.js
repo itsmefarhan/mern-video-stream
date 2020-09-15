@@ -10,13 +10,19 @@ import {
   ListItemAvatar,
   ListItemText,
   ListItemSecondaryAction,
+  Avatar,
 } from "@material-ui/core";
+import ThumbUp from "@material-ui/icons/ThumbUp";
+import ThumbUpOutlined from "@material-ui/icons/ThumbUpOutlined";
+import ThumbDown from "@material-ui/icons/ThumbDown";
+import ThumbDownOutlined from "@material-ui/icons/ThumbDownOutlined";
 import { makeStyles } from "@material-ui/core/styles";
 import ReactPlayer from "react-player";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../context/auth/authContext";
 import { UserContext } from "../context/user/userContext";
+import Comment from "../components/Comment";
 
 const useStyles = makeStyles(() => ({
   sideGrid: {
@@ -33,6 +39,7 @@ const Video = ({ match }) => {
   const { id } = match.params;
   const [video, setVideo] = useState({});
   const [videos, setVideos] = useState([]);
+
   const { loggedInUser } = useContext(AuthContext);
   const { sub, unsub, user, getUser } = useContext(UserContext);
 
@@ -73,10 +80,18 @@ const Video = ({ match }) => {
                   video.createdAt
                 ).toDateString()}`}
               />
+              <ListItemSecondaryAction>
+                <ThumbUp />
+                <ThumbUpOutlined />
+                <ThumbDown />
+                <ThumbDownOutlined />
+              </ListItemSecondaryAction>
             </ListItem>
             <Divider />
             <ListItem>
-              <ListItemAvatar />
+              <ListItemAvatar>
+                <Avatar />
+              </ListItemAvatar>
               <ListItemText
                 primary={video.postedBy && video.postedBy.name}
                 secondary={`${
@@ -120,6 +135,8 @@ const Video = ({ match }) => {
                 )}
             </ListItem>
           </List>
+          {/* Comments */}
+          <Comment videoId={id} loggedInUser={loggedInUser} />
         </Grid>
         {/* Related Videos */}
         <Grid item xs={12} sm={4}>
