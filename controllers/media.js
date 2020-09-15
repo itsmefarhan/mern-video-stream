@@ -1,7 +1,6 @@
 const multer = require("multer");
 const Media = require("../models/media");
 const User = require("../models/user");
-// const ffmpeg = require("fluent-ffmpeg");
 
 let storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -56,6 +55,19 @@ exports.getVideos = async (req, res) => {
       .populate("postedBy", "_id name email")
       .sort("-createdAt");
     res.json(media);
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+exports.incrementView = async (req, res, next) => {
+  try {
+    await Media.findByIdAndUpdate(
+      req.params.videoId,
+      { $inc: { views: 1 } },
+      { new: true }
+    );
+    next();
   } catch (err) {
     console.log(err);
   }
@@ -145,18 +157,10 @@ exports.getComments = async (req, res) => {
 exports.addLike = async (req, res) => {
   try {
     let media = await Media.findById(req.params.videoId);
-    // find user in likes
-    // let like = await media.likes.find(
-    //   (el) => el.postedBy._id.toString() === req.user._id
-    // );
     // find user in dislikes
     let dislike = await media.dislikes.find(
       (dislike) => dislike.postedBy.toString() === req.user._id
     );
-    // if like return
-    // if (like) {
-    //   return res.status(400).json({ error: "Already liked" });
-    // }
     // if dislike remove dislike
     if (dislike) {
       media.dislikes.splice(media.dislikes.indexOf(dislike), 1);
@@ -176,11 +180,6 @@ exports.removeLike = async (req, res) => {
     let like = await media.likes.find(
       (el) => el.postedBy.toString() === req.user._id
     );
-
-    // if like return
-    // if (!like) {
-    //   return res.status(400).json({ error: "Already liked" });
-    // }
     media.likes.splice(media.likes.indexOf(like), 1);
     await media.save();
     res.json(media.likes);
@@ -192,18 +191,10 @@ exports.removeLike = async (req, res) => {
 exports.addDislike = async (req, res) => {
   try {
     let media = await Media.findById(req.params.videoId);
-    // find user in dislikes
-    // let dislike = await media.dislikes.find(
-    //   (el) => el.postedBy._id.toString() === req.user._id
-    // );
     // find user in likes
     let like = await media.likes.find(
       (like) => like.postedBy._id.toString() === req.user._id
     );
-    // if like return
-    // if (like) {
-    //   return res.status(400).json({ error: "Already liked" });
-    // }
     // if dislike remove dislike
     if (like) {
       media.likes.splice(media.likes.indexOf(like), 1);
@@ -223,11 +214,6 @@ exports.removeDislike = async (req, res) => {
     let dislike = await media.dislikes.find(
       (el) => el.postedBy._id.toString() === req.user._id
     );
-
-    // if like return
-    // if (!like) {
-    //   return res.status(400).json({ error: "Already liked" });
-    // }
     media.dislikes.splice(media.dislikes.indexOf(dislike), 1);
     await media.save();
     res.json(media.dislikes);

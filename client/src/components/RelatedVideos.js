@@ -1,5 +1,5 @@
 import React from "react";
-import { Paper, Typography } from "@material-ui/core";
+import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { Link } from "react-router-dom";
 import ReactPlayer from "react-player";
@@ -8,6 +8,7 @@ const useStyles = makeStyles(() => ({
   sideGrid: {
     display: "flex",
     marginTop: "10px",
+    width: "100%",
   },
   sideDiv: {
     marginLeft: "20px",
@@ -17,7 +18,7 @@ const useStyles = makeStyles(() => ({
 const RelatedVideos = ({ vid }) => {
   const classes = useStyles();
   return (
-    <Paper className={classes.sideGrid} elevation={3} key={vid._id}>
+    <div className={classes.sideGrid} key={vid._id}>
       <Link to={`/video/${vid._id}`}>
         <ReactPlayer url={`/${vid.filePath}`} width={200} height="auto" />
       </Link>
@@ -28,7 +29,7 @@ const RelatedVideos = ({ vid }) => {
         </Typography>
         <Typography variant="caption">{vid.views} views</Typography>
       </div>
-    </Paper>
+    </div>
   );
 };
 

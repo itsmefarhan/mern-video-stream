@@ -6,6 +6,7 @@ const {
   newVideo,
   getVideos,
   getRelatedVideos,
+  incrementView,
   getVideo,
   getSubscriptions,
   addComment,
@@ -35,5 +36,5 @@ router.route("/likedislike/:videoId").get(requireLogin, getLikesDislikes);
 router
   .route("/comment/:videoId/:commentId")
   .delete(requireLogin, deleteComment);
-router.route("/:videoId").get(getVideo);
+router.route("/:videoId").get(incrementView, getVideo);
 module.exports = router;

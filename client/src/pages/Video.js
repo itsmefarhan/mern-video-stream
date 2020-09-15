@@ -135,7 +135,7 @@ const Video = ({ match }) => {
                   video.likes.find(
                     (user) => user.postedBy === loggedInUser._id
                   ) ? (
-                    <IconButton
+                    <IconButton color='primary'
                       onClick={() =>
                         handleUnlike({
                           postedBy: loggedInUser._id,
@@ -146,7 +146,7 @@ const Video = ({ match }) => {
                       <ThumbUp />
                     </IconButton>
                   ) : (
-                    <IconButton
+                    <IconButton color='primary'
                       onClick={() =>
                         handleLike({ postedBy: loggedInUser._id, mediaId: id })
                       }
@@ -160,7 +160,7 @@ const Video = ({ match }) => {
                   video.dislikes.find(
                     (user) => user.postedBy === loggedInUser._id
                   ) ? (
-                    <IconButton
+                    <IconButton color='primary'
                       onClick={() =>
                         handleUndislike({
                           postedBy: loggedInUser._id,
@@ -171,7 +171,7 @@ const Video = ({ match }) => {
                       <ThumbDown />
                     </IconButton>
                   ) : (
-                    <IconButton
+                    <IconButton color='primary'
                       onClick={() =>
                         handleDislike({
                           postedBy: loggedInUser._id,
