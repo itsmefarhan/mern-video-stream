@@ -82,7 +82,7 @@ const Comment = ({ videoId, loggedInUser }) => {
             <ListItemText
               secondary={`${new Date(com.createdAt).toDateString()}`}
             />
-            {com.postedBy._id === loggedInUser._id && (
+            {com.postedBy && loggedInUser && com.postedBy._id === loggedInUser._id && (
               <ListItemSecondaryAction
                 onClick={() => handleDelete(com._id)}
                 style={{ cursor: "pointer" }}

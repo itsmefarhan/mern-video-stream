@@ -45,8 +45,32 @@ const MediaSchema = new mongoose.Schema(
         },
         createdAt: {
           type: Date,
-          default: Date.now
-        }
+          default: Date.now,
+        },
+      },
+    ],
+    likes: [
+      {
+        postedBy: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        },
+        mediaId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Media",
+        },
+      },
+    ],
+    dislikes: [
+      {
+        postedBy: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        },
+        mediaId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Media",
+        },
       },
     ],
   },

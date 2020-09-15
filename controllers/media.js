@@ -141,3 +141,106 @@ exports.getComments = async (req, res) => {
     console.log(err);
   }
 };
+
+exports.addLike = async (req, res) => {
+  try {
+    let media = await Media.findById(req.params.videoId);
+    // find user in likes
+    // let like = await media.likes.find(
+    //   (el) => el.postedBy._id.toString() === req.user._id
+    // );
+    // find user in dislikes
+    let dislike = await media.dislikes.find(
+      (dislike) => dislike.postedBy.toString() === req.user._id
+    );
+    // if like return
+    // if (like) {
+    //   return res.status(400).json({ error: "Already liked" });
+    // }
+    // if dislike remove dislike
+    if (dislike) {
+      media.dislikes.splice(media.dislikes.indexOf(dislike), 1);
+    }
+    media.likes.unshift(req.body);
+    await media.save();
+    res.json(media.likes);
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+exports.removeLike = async (req, res) => {
+  try {
+    let media = await Media.findById(req.params.videoId);
+    // find user in likes
+    let like = await media.likes.find(
+      (el) => el.postedBy.toString() === req.user._id
+    );
+
+    // if like return
+    // if (!like) {
+    //   return res.status(400).json({ error: "Already liked" });
+    // }
+    media.likes.splice(media.likes.indexOf(like), 1);
+    await media.save();
+    res.json(media.likes);
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+exports.addDislike = async (req, res) => {
+  try {
+    let media = await Media.findById(req.params.videoId);
+    // find user in dislikes
+    // let dislike = await media.dislikes.find(
+    //   (el) => el.postedBy._id.toString() === req.user._id
+    // );
+    // find user in likes
+    let like = await media.likes.find(
+      (like) => like.postedBy._id.toString() === req.user._id
+    );
+    // if like return
+    // if (like) {
+    //   return res.status(400).json({ error: "Already liked" });
+    // }
+    // if dislike remove dislike
+    if (like) {
+      media.likes.splice(media.likes.indexOf(like), 1);
+    }
+    media.dislikes.unshift(req.body);
+    await media.save();
+    res.json(media.dislikes);
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+exports.removeDislike = async (req, res) => {
+  try {
+    let media = await Media.findById(req.params.videoId);
+    // find user in likes
+    let dislike = await media.dislikes.find(
+      (el) => el.postedBy._id.toString() === req.user._id
+    );
+
+    // if like return
+    // if (!like) {
+    //   return res.status(400).json({ error: "Already liked" });
+    // }
+    media.dislikes.splice(media.dislikes.indexOf(dislike), 1);
+    await media.save();
+    res.json(media.dislikes);
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+exports.getLikesDislikes = async (req, res) => {
+  try {
+    let media = await Media.findById(req.params.videoId);
+    res.json({ likes: media.likes.length, dislikes: media.dislikes.length });
+  } catch (err) {
+    console.log(err);
+  }
+};

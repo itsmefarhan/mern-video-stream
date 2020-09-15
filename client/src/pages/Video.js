@@ -4,45 +4,35 @@ import {
   Typography,
   Divider,
   Button,
-  Paper,
   List,
   ListItem,
   ListItemAvatar,
   ListItemText,
   ListItemSecondaryAction,
   Avatar,
+  IconButton,
 } from "@material-ui/core";
 import ThumbUp from "@material-ui/icons/ThumbUp";
 import ThumbUpOutlined from "@material-ui/icons/ThumbUpOutlined";
 import ThumbDown from "@material-ui/icons/ThumbDown";
 import ThumbDownOutlined from "@material-ui/icons/ThumbDownOutlined";
-import { makeStyles } from "@material-ui/core/styles";
 import ReactPlayer from "react-player";
 import axios from "axios";
-import { Link } from "react-router-dom";
 import { AuthContext } from "../context/auth/authContext";
 import { UserContext } from "../context/user/userContext";
 import Comment from "../components/Comment";
-
-const useStyles = makeStyles(() => ({
-  sideGrid: {
-    display: "flex",
-    marginTop: "10px",
-  },
-  sideDiv: {
-    marginLeft: "20px",
-  },
-}));
+import RelatedVideos from "../components/RelatedVideos";
 
 const Video = ({ match }) => {
-  const classes = useStyles();
   const { id } = match.params;
   const [video, setVideo] = useState({});
   const [videos, setVideos] = useState([]);
-
+  const [likeCount, setLikeCount] = useState();
+  const [dislikeCount, setDislikeCount] = useState();
   const { loggedInUser } = useContext(AuthContext);
   const { sub, unsub, user, getUser } = useContext(UserContext);
-
+  const [success, setSuccess] = useState(true);
+  // Get video
   useEffect(() => {
     axios
       .get(`/api/media/${id}`)
@@ -52,14 +42,71 @@ const Video = ({ match }) => {
       })
 
       .catch((e) => console.log(e));
-  }, [id, user && user.count]);
+  }, [id, user && user.count, success]);
 
+  // Get related videos
   useEffect(() => {
     axios
       .get(`/api/media/related/${id}`)
       .then((res) => setVideos(res.data))
       .catch((e) => console.log(e));
   }, []);
+
+  // Get likes / dislikes count
+  useEffect(() => {
+    axios
+      .get(`/api/media/likedislike/${id}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      })
+      .then((res) => {
+        setLikeCount(res.data.likes);
+        setDislikeCount(res.data.dislikes);
+      });
+  }, [success]);
+
+  const handleLike = async (data) => {
+    setSuccess(false);
+    await axios.put(`/api/media/like/${id}`, data, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+    setSuccess(true);
+  };
+
+  const handleUnlike = async (data) => {
+    setSuccess(false);
+    await axios.put(`/api/media/unlike/${id}`, data, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+    setSuccess(true);
+  };
+
+  const handleDislike = async (data) => {
+    setSuccess(false);
+    await axios.put(`/api/media/dislike/${id}`, data, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+    setSuccess(true);
+  };
+
+  const handleUndislike = async (data) => {
+    setSuccess(false);
+    await axios.put(`/api/media/undislike/${id}`, data, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+    setSuccess(true);
+  };
 
   return (
     <>
@@ -80,12 +127,63 @@ const Video = ({ match }) => {
                   video.createdAt
                 ).toDateString()}`}
               />
-              <ListItemSecondaryAction>
-                <ThumbUp />
-                <ThumbUpOutlined />
-                <ThumbDown />
-                <ThumbDownOutlined />
-              </ListItemSecondaryAction>
+              {loggedInUser && (
+                <ListItemSecondaryAction>
+                  {likeCount}
+                  {video &&
+                  video.likes &&
+                  video.likes.find(
+                    (user) => user.postedBy === loggedInUser._id
+                  ) ? (
+                    <IconButton
+                      onClick={() =>
+                        handleUnlike({
+                          postedBy: loggedInUser._id,
+                          mediaId: id,
+                        })
+                      }
+                    >
+                      <ThumbUp />
+                    </IconButton>
+                  ) : (
+                    <IconButton
+                      onClick={() =>
+                        handleLike({ postedBy: loggedInUser._id, mediaId: id })
+                      }
+                    >
+                      <ThumbUpOutlined />
+                    </IconButton>
+                  )}
+                  {dislikeCount}
+                  {video &&
+                  video.dislikes &&
+                  video.dislikes.find(
+                    (user) => user.postedBy === loggedInUser._id
+                  ) ? (
+                    <IconButton
+                      onClick={() =>
+                        handleUndislike({
+                          postedBy: loggedInUser._id,
+                          mediaId: id,
+                        })
+                      }
+                    >
+                      <ThumbDown />
+                    </IconButton>
+                  ) : (
+                    <IconButton
+                      onClick={() =>
+                        handleDislike({
+                          postedBy: loggedInUser._id,
+                          mediaId: id,
+                        })
+                      }
+                    >
+                      <ThumbDownOutlined />
+                    </IconButton>
+                  )}
+                </ListItemSecondaryAction>
+              )}
             </ListItem>
             <Divider />
             <ListItem>
@@ -144,22 +242,7 @@ const Video = ({ match }) => {
             RELATED VIDEOS
           </Typography>
           {videos.map((vid) => (
-            <Paper className={classes.sideGrid} elevation={3} key={vid._id}>
-              <Link to={`/video/${vid._id}`}>
-                <ReactPlayer
-                  url={`/${vid.filePath}`}
-                  width={200}
-                  height="auto"
-                />
-              </Link>
-              <div className={classes.sideDiv}>
-                <Typography variant="h6">{vid.title}</Typography>
-                <Typography variant="body1">
-                  {vid.postedBy && vid.postedBy.name}
-                </Typography>
-                <Typography variant="caption">{vid.views} views</Typography>
-              </div>
-            </Paper>
+            <RelatedVideos vid={vid} key={vid._id} />
           ))}
         </Grid>
       </Grid>
